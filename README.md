@@ -39,6 +39,6 @@ When you mount in a `server.conf` from your machine, that file does not like to 
 Use the `ports:` block at the bottom of `docker-compose.yml` if you want to utilize a different port mapping scheme bewtween your container and machine. You'll need to do this if you are running multiple containers, as no two containers can map to the same port on the host. You can randomize the port mapping by the following
 ```yml
 ports:
-  - 8000:8000
+  - 8000
 ```
 By not specifying a specfic port to which port 8000 on the container, Docker will select one for you. After starting the container, run `docker ps` to show your new container and it's port mapping.
