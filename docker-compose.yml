@@ -1,0 +1,47 @@
+  version: "3.6"
+
+networks:
+  splunknet:
+    driver: bridge
+    attachable: true
+
+
+services:
+  so1:
+    networks:
+      splunknet:
+        aliases:
+          - so1
+    image: splunk/splunk:latest
+    container_name: so1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      # set a password for the admin user
+      - SPLUNK_PASSWORD=superSecret
+      # match the container name & alias
+      - SPLUNK_STANDALONE_URL=so1
+      # IP of your master splunk server
+      - SPLUNK_LICENSE_MASTER_URL=x.xx.xx.xxx
+      # configure the server as a standalone
+      - SPLUNK_ROLE=splunk_standalone
+      # any apps that you want to install
+      # match these paths to the apps you mount in under volumes:
+      - SPLUNK_APPS_URL=/tmp/res.spl,/tmp/es.spl
+      # run docker-compose in debug mode
+      - DEBUG=true
+
+    volumes:
+      # I use this section to mount apps into splunk and install them
+      # doing this saves you the step of doing it manually through the splunk UI
+      # You need to mirror these mount location in the SPLUNK_APPS_URL environment variable to install
+      # Here we are installing Splunk ES and the IBM Resilient Addon
+      - ./apps/resilient-integration-for-splunk-and-splunk-es_110.tgz:/tmp/res.spl
+      - ./apps/splunk-enterprise-security_620.spl:/tmp/es.spl
+      # mount a server.conf file if you want to make changes like setting the python version
+      #- ./mount-files/server.conf:/opt/splunk/etc/local/server.conf
+
+    ports:
+      # expose ports 8000 and 8089 locally
+      # so you can hit the reach the UI and API on localhost
+      - 8000:8000
+      - 8089:8089
